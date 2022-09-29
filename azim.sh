@@ -17,6 +17,10 @@ conda install -n quilt-wrap snakemake
 conda install -n quilt-wrap r-quilt
 conda activate quilt-wrap
 
+## install missing R packgae
+## not needed if using R -e '()' 
+## R -e 'install.packages("optparse", repos="http://cran.us.r-project.org")'
+
 ## install liftOver
 cd ${ANALYSIS_DIR}
 wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/liftOver
@@ -40,8 +44,10 @@ R -f determine_chunks.R ## done locally on head node
 ## Prepare per-region imputation files
 ./run.sh prep cluster 1000
 
-## Impute samples
-./run.sh impute cluster 1000
+
+
+
+
 
 
 
@@ -51,7 +57,7 @@ R -f determine_chunks.R ## done locally on head node
 
 
 ##
-## Azim specific work
+## Azim specific work - though note - recombination map above is specific 
 ## 
 
 

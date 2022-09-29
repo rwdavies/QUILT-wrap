@@ -146,7 +146,7 @@ rule prep_ref:
     input:
         hap = f"refs/oneKG.chr{{chr}}.hap.gz",
         legend = f"refs/oneKG.chr{{chr}}.legend.gz",
-	recomb = f"{RECOMB_POP}/{RECOMB_POP}-{{chr}}-final.fixed.txt.gz"
+	recomb = f"{RECOMB_POP}/{RECOMB_POP}-chr{{chr}}-final.b38.txt.gz"
     output:
         RData = f"refs/RData/ref_package.chr{{chr}}.{{regionStart}}.{{regionEnd}}.RData"
     params:
@@ -159,17 +159,17 @@ rule prep_ref:
     shell:
         """
             mkdir -p refs/RData/other/
-            QUILT_prepare_reference.R \
-            --outputdir=refs/RData/other/ \
-            --chr={wildcards.chr} \
-            --nGen={NGEN} \
-            --reference_haplotype_file={input.hap} \
-            --reference_legend_file={input.legend} \
-            --genetic_map_file={input.recomb} \
-            --regionStart={wildcards.regionStart} \
-            --regionEnd={wildcards.regionEnd} \
-            --buffer=0 \
-            --output_file={output.RData}
+            R -e 'library("data.table"); library("QUILT"); QUILT_prepare_reference( \
+            outputdir="refs/RData/other/", \
+            chr="{wildcards.chr}", \
+            nGen={NGEN}, \
+            reference_haplotype_file="{input.hap}" ,\
+            reference_legend_file="{input.legend}", \
+            genetic_map_file="{input.recomb}", \
+            regionStart={wildcards.regionStart}, \
+            regionEnd={wildcards.regionEnd}, \
+            buffer=0, \
+            output_file="{output.RData}")'
         """
 
 regions_to_prep=[]
@@ -201,7 +201,7 @@ rule prep:
 rule quilt:
     input:
         bamlist = "bamlist.txt",
-        RData = f"refs/RData/ref_package.chr{{chr}}.{{regionStart}}.{{regionEnd}}.RData"    
+        RData = f"refs/RData/ref_package.chr{{chr}}.{{regionStart}}.{{regionEnd}}.RData"   
     output:
         vcf = f"vcfs/regions/quilt.chr{{chr}}.{{regionStart}}.{{regionEnd}}.vcf.gz"
     params:
@@ -216,16 +216,16 @@ rule quilt:
             ## set a seed here, randomly, so can try to reproduce if it fails
             SEED=`echo $RANDOM`
             mkdir -p vcfs/regions/
-            QUILT.R \
-            --outputdir=refs/RData/other/ \
-            --chr={wildcards.chr} \
-            --regionStart={wildcards.regionStart} \
-            --regionEnd={wildcards.regionEnd} \
-            --buffer=0 \
-            --bamlist={input.bamlist} \
-            --prepared_reference_filename={input.RData} \
-            --output_filename={output.vcf} \
-            --seed=${{SEED}}
+            R -e 'library("data.table"); library("QUILT"); QUILT( \
+            outputdir="refs/RData/other/", \
+            chr="{wildcards.chr}", \
+            regionStart={wildcards.regionStart}, \
+            regionEnd={wildcards.regionEnd}, \
+            buffer=0, \
+            bamlist="{input.bamlist}", \
+            prepared_reference_filename="{input.RData}", \
+            output_filename="{output.vcf}", \
+            seed='${{SEED}}')'
         """
 
 rule impute_per_chr:

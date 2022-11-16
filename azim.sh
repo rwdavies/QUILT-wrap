@@ -3,6 +3,8 @@
 
 ## cd to this directory and get environment variables
 cd ~/proj/QUILT-wrap
+
+## manually make activate
 source activate
 
 ## source previously installed conda
@@ -31,6 +33,7 @@ wget http://hgdownload.cse.ucsc.edu/goldenpath/hg19/liftOver/hg19ToHg38.over.cha
 ## TODO - set this more algorithmically, or just choose an African / African American population
 
 ## Download ref information
+cd ~/proj/QUILT-wrap
 ./run.sh download local 4 ## done locally as only head nodes have internet
 
 ## Convert recombination rate files and reference files
@@ -46,26 +49,14 @@ R -f determine_chunks.R ## done locally on head node
 
 
 
-
-
-
-
-
-
-
-
-
-
 ##
 ## Azim specific work - though note - recombination map above is specific 
 ## 
 
 
-## make bamlist
 ## manually remove 4 high coverage bams
-BAMLIST=${QUILT_WRAP_HOME}bamlist.txt
-ls /well/ansari/shared/lcwgs/data/raw_data_1x/*bam | \
-    grep -v 'WTCHG_904268_72135285.bam\|WTCHG_904268_72125284.bam\|WTCHG_904268_72115283.bam\|WTCHG_904268_72105282.bam' > ${BAMLIST}
+ls /well/ansari/shared/lcwgs/Hg38/*bam | \
+    grep -v 'WTCHG_722293_NE755566.recal.bam\|WTCHG_722293_NE725538.recal.bam\|WTCHG_722292_NE755566.recal.bam\|WTCHG_722292_NE725538.recal.bam' > ${BAMLIST}
 
 ## Impute samples
 ./run.sh impute cluster 1000

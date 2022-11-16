@@ -36,7 +36,7 @@ SNAKEFILE="${SCRIPTPATH}main.smk"
 SNAKEMAKE="snakemake"
 
 ## puts QUILT.R in PATH
-export PATH=${QUILT_HOME}:${PATH}
+## export PATH=${QUILT_HOME}:${PATH}
 
 if [ $where == "cluster" ]
 then

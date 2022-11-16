@@ -159,9 +159,11 @@ rule prep_ref:
     shell:
         """
             mkdir -p refs/RData/other/
+            ## buffer set to 0, here we impute the buffers, get rid of them later
+            ## using concat
             R -e 'library("data.table"); library("QUILT"); QUILT_prepare_reference( \
             outputdir="refs/RData/other/", \
-            chr="{wildcards.chr}", \
+            chr="chr{wildcards.chr}", \
             nGen={NGEN}, \
             reference_haplotype_file="{input.hap}" ,\
             reference_legend_file="{input.legend}", \
@@ -201,7 +203,7 @@ rule prep:
 rule quilt:
     input:
         bamlist = "bamlist.txt",
-        RData = f"refs/RData/ref_package.chr{{chr}}.{{regionStart}}.{{regionEnd}}.RData"   
+        RData = f"refs/RData/ref_package.chr{{chr}}.{{regionStart}}.{{regionEnd}}.RData"
     output:
         vcf = f"vcfs/regions/quilt.chr{{chr}}.{{regionStart}}.{{regionEnd}}.vcf.gz"
     params:
@@ -218,7 +220,7 @@ rule quilt:
             mkdir -p vcfs/regions/
             R -e 'library("data.table"); library("QUILT"); QUILT( \
             outputdir="refs/RData/other/", \
-            chr="{wildcards.chr}", \
+            chr="chr{wildcards.chr}", \
             regionStart={wildcards.regionStart}, \
             regionEnd={wildcards.regionEnd}, \
             buffer=0, \
@@ -227,6 +229,24 @@ rule quilt:
             output_filename="{output.vcf}", \
             seed='${{SEED}}')'
         """
+
+rule quilt_info:
+    input:
+        vcf = f"vcfs/regions/quilt.chr{{chr}}.{{regionStart}}.{{regionEnd}}.vcf.gz"
+    output:
+        vcf = f"vcfs/regions/quilt.chr{{chr}}.{{regionStart}}.{{regionEnd}}.vcf.gz.output.RData"
+    params:
+        N='info',
+        threads=1
+    wildcard_constraints:
+        chr='\w{1,2}',
+        regionStart='\d{1,9}',
+        regionEnd='\d{1,9}'
+    shell:
+        """
+            R -f ${{QUILT_WRAP_HOME}}info.R --args {output.vcf}
+        """
+
 
 rule impute_per_chr:
     input:

@@ -8,11 +8,21 @@ for(package in c("data.table", "rjson")) {
 ## install.packages("https://cran.r-project.org/src/contrib/Archive/rjson/rjson_0.2.20.tar.gz")
 library("parallel")
 
+
 ANALYSIS_DIR <- Sys.getenv("ANALYSIS_DIR")
 WINDOWSIZE <- as.integer(Sys.getenv("WINDOWSIZE"))
 BUFFER <- as.integer(Sys.getenv("BUFFER"))
 
 CHRLIST <- 1:22
+
+if (1 == 0) {
+
+    ANALYSIS_DIR <- "/well/ansari/shared/lcwgs/results/2022_11_02/"
+    WINDOWSIZE <- 5000000
+    BUFFER <- 500000
+
+}
+
 
 data <- mclapply(
     CHRLIST,

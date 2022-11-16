@@ -1,8 +1,9 @@
 export QUILT_WRAP_HOME=/users/davies/dcc832/proj/QUILT-wrap/
-export ANALYSIS_DIR=/well/ansari/shared/lcwgs/results/2022_09_27/
+export QUILT_HOME=/users/davies/dcc832/proj/QUILT/
+export ANALYSIS_DIR=/well/ansari/shared/lcwgs/results/2022_11_02/
 mkdir -p ${ANALYSIS_DIR}
 
-export BAMLIST=${QUILT_WRAP_HOME}/bamlist.txt
+export BAMLIST=${QUILT_WRAP_HOME}/bamlist38.txt
 export WINDOWSIZE=5000000
 export BUFFER=500000
 
